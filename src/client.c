@@ -44,34 +44,31 @@ urlinfo_t *parse_url(char *url)
     // 1. Use strchr to find the first slash in the URL (this is assuming there is no http:// or https:// in the URL).
     char *slash;
     slash = '/';
+    char *first_backslash = strchr(hostname, slash);
 
     // 2. Set the path pointer to 1 character after the spot returned by strchr.
-    path = strchr(hostname, *slash + 1);
-    printf("Path, or everything that comes after the /: %s", path);
+    path = first_backslash + 1;
+    printf("Path, or everything that comes after the /: %s\n", path);
 
     // 3. Overwrite the slash with a '\0' so that we are no longer considering anything after the slash.
-    char *p;
-    p = strstr(hostname, slash); // Finds the slash in url
-    if (p) {
-      strcpy(p, '\0'); // localhost:3490 \0 d20
-      printf("%s", hostname);
-    }
+    *first_backslash = '\0'; // localhost:3490 \0 d20
 
     // 4. Use strchr to find the first colon in the URL.
     char *colon;
     colon = ':';
+    char *first_colon = strchr(hostname, colon);
 
     // 5. Set the port pointer to 1 character after the spot returned by strchr.
-    port = strchr(hostname, *colon + 1);
-    printf("Port, or everything that comes after the colon: %s", port);
+    port = first_colon + 1;
+    printf("Port, or everything that comes after the colon: %s\n", port);
 
     // 6. Overwrite the colon with a '\0' so that we are just left with the hostname.
-    char *q;
-    q = strstr(hostname, colon);
-    if (q) {
-      strcpy(q, '\0'); // localhost
-      printf("%s", hostname);
-    }
+    *first_colon = '\0'; // localhost
+
+    // Set local copies to the struct
+    urlinfo->hostname = hostname;
+    urlinfo->port = port;
+    urlinfo->path = path;
 
   return urlinfo;
 }
