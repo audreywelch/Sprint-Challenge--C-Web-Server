@@ -95,6 +95,7 @@ int send_request(int fd, char *hostname, char *port, char *path)
   ///////////////////
   // IMPLEMENT ME! //
   ///////////////////
+
 /*
   GET /path HTTP/1.1
   Host: hostname:port
@@ -126,17 +127,31 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  /*
-    1. Parse the input URL
-    2. Initialize a socket by calling the `get_socket` function from lib.c
-    3. Call `send_request` to construct the request and send it
-    4. Call `recv` in a loop until there is no more data to receive from the server. Print the received response to stdout.
-    5. Clean up any allocated memory and open file descriptors.
-  */
-
   ///////////////////
   // IMPLEMENT ME! //
   ///////////////////
 
+  urlinfo_t *urlinfo = malloc(sizeof(urlinfo_t));
+
+  // 1. Parse the input URL
+  urlinfo = parse_url(argv[1]); // "localhost:3490/d20"
+  // 2. Initialize a socket by calling the `get_socket` function from lib.c
+  sockfd = get_socket(urlinfo->hostname, urlinfo->port);
+
+  // 3. Call `send_request` to construct the request and send it
+  send_request(sockfd, urlinfo->hostname, urlinfo->port, urlinfo->path);
+
+  // 4. Call `recv` in a loop until there is no more data to receive from the server. Print the received response to stdout.
+  
+  // While there is still data to receive from the server...
+  while ((numbytes = recv(sockfd, buf, BUFSIZE - 1, 0)) > 0) {
+    // Print the data we got back to stdout
+    fprintf(stdout, "%s\n", buf);
+  }
+
+  // 5. Clean up any allocated memory and open file descriptors.
+  free(urlinfo);
+  close(sockfd);
+  
   return 0;
 }
